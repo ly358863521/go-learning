@@ -13,7 +13,8 @@ type userinfo struct {
 func main() {
     r := gin.Default()
 
-    r.LoadHTMLGlob("views/*")
+	r.LoadHTMLGlob("views/*")
+	
     r.GET("/", indexHandler)
     r.POST("/login", formHandler)
 
