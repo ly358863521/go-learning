@@ -1,0 +1,80 @@
+<html>
+    <head>
+		<title>test upload</title>
+		<meta charset="utf-8"/>
+		<script src="wasm_exec.js"></script>
+        <script>
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+        if(window.receive && window.postfile){
+            console.debug("wasm loaded.")
+        }
+        function submitForm(e,f){
+            // alert(123);
+            e.preventDefault();
+            if(window.receive && window.postfile){
+                console.debug("wasm loaded.")
+            }
+            window.postfile("http://localhost:12345/upload",f.file.files[0].name);
+            console.log(e);
+            console.log(f.file);
+            selectedFile = f.file.files[0]
+            r = selectedFile.stream().getReader()
+            file_start = window.performance.now()
+            console.debug(file_start)
+            average = document.getElementsByTagName("span")[0]
+            current = document.getElementsByTagName("span")[1]
+            maximum = document.getElementsByTagName("span")[2]
+            percent = document.getElementsByTagName("span")[3]
+            file_size = f.file.files[0].size
+            max_speed = 0;
+            file_sum = 0;
+            readable = true
+            cb = undefined;
+            read = () => {
+                r.read().then(res => {
+                    if(res.done){
+                        console.log(res.value)
+                        console.log("Transfer file done.");
+                        window.finishPost();
+                        return;
+                    }
+                    chunk_start = window.performance.now()
+                    console.debug(chunk_start)
+                    if(window.receive(res.value)){
+                        file_sum += res.value.length
+                        chunk_stop = window.performance.now()
+                        chunk_use_time = chunk_stop - chunk_start
+                        chunk_speed = (res.value.length / chunk_use_time * 1.024).toFixed(2) // KB/s
+                        current.textContent = chunk_speed
+                        average.textContent = (file_sum / (chunk_stop - file_start) * 1.024).toFixed(2)
+                        percent.textContent = (file_sum *100/ file_size).toFixed(1)
+                        if(chunk_speed > max_speed){
+                            max_speed = chunk_speed;
+                            maximum.textContent = chunk_speed;
+                        }
+                    }
+                    read()
+                })
+            };
+            read();
+            return false;
+            };
+            </script>
+    </head>
+    <body>
+        <form method="POST" id="abc" enctype='multipart/form-data' onsubmit="submitForm(event,this);">
+            <input type="file" name="file" id="file_upload"/>
+            <button type="submit">upload</button>
+        </form>
+        <div>
+            <br/>
+            平均速度:<span id="average">&nbsp;0.00</span>KB/s<br/>
+            鸡屎速度:<span id="currnet">&nbsp;0.00</span>KB/s<br/>
+            峰值速度:<span id="maximum">&nbsp;0.00</span>KB/s<br/>
+            总进度:<span id="percent">&nbsp;&nbsp;&nbsp;0.00</span>%<br/>
+        </div>
+    </body>
+</html>
