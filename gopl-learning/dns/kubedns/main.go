@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-
+	"sync"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +17,11 @@ type db struct {
 	db   map[string]string
 	path string
 }
-
+var (
+	trueIPmu sync.RWMutex
+	falseIPmu sync.RWMutex
+	rulemu sync.RWMutex
+)
 var (
 	trueIP  = db{db: make(map[string]string), path: "trueIP.json"}
 	falseIP = db{db: make(map[string]string), path: "falseIP.json"}
@@ -64,6 +68,8 @@ func iptoseg(ip string) string {
 	return ip
 }
 func addTrueIP(c *gin.Context) {
+	trueIPmu.Lock()
+	defer trueIPmu.Unlock()
 	name := c.Param("name")
 	ip := c.Param("ip")
 	trueIP.db[name] = ip
@@ -73,6 +79,8 @@ func addTrueIP(c *gin.Context) {
 	c.String(http.StatusOK, "add success!")
 }
 func delTrueIP(c *gin.Context) {
+	trueIPmu.Lock()
+	defer trueIPmu.Unlock()
 	name := c.Param("name")
 	if _, ok := trueIP.db[name]; ok {
 		delete(trueIP.db, name)
@@ -83,6 +91,8 @@ func delTrueIP(c *gin.Context) {
 	}
 }
 func addFalseIP(c *gin.Context) {
+	falseIPmu.Lock()
+	defer falseIPmu.Unlock()
 	name := c.Param("name")
 	ip := c.Param("ip")
 	falseIP.db[name] = ip
@@ -92,6 +102,8 @@ func addFalseIP(c *gin.Context) {
 	c.String(http.StatusOK, "add success!")
 }
 func delFalseIP(c *gin.Context) {
+	falseIPmu.Lock()
+	defer falseIPmu.Unlock()
 	name := c.Param("name")
 	if _, ok := falseIP.db[name]; ok {
 		delete(falseIP.db, name)
@@ -102,6 +114,8 @@ func delFalseIP(c *gin.Context) {
 	}
 }
 func getFalseIP(name string) (string, bool) {
+	falseIPmu.RLock()
+	defer falseIPmu.RUnlock()
 	if ip, ok := falseIP.db[name]; ok {
 		return ip, true
 	}
@@ -120,6 +134,10 @@ func getTrueIP(c *gin.Context) {
 		c.String(http.StatusOK, "%s not exist!", dst)
 		return
 	}
+	trueIPmu.RLock()
+	rulemu.RLock()
+	defer rulemu.RUnlock()
+	defer trueIPmu.RUnlock()
 	seg1 := iptoseg(srcIP)
 	seg2 := iptoseg(dstIP)
 	rule1 := seg1 + "@" + seg2
@@ -131,6 +149,8 @@ func getTrueIP(c *gin.Context) {
 }
 
 func setRule(c *gin.Context) {
+	rulemu.Lock()
+	defer rulemu.Unlock()
 	rule1 := c.Param("seg1") + "@" + c.Param("seg2")
 	rule2 := c.Param("seg2") + "@" + c.Param("seg1")
 	rule.db[rule1] = "ok"
@@ -142,6 +162,8 @@ func setRule(c *gin.Context) {
 	c.String(http.StatusOK, "add success!")
 }
 func delRule(c *gin.Context) {
+	rulemu.Lock()
+	defer rulemu.Unlock()
 	seg1 := c.Param("seg1")
 	seg2 := c.Param("seg2")
 	rule1 := seg1 + "@" + seg2
@@ -176,7 +198,7 @@ func main() {
 
 	router.GET("/setRule/:seg1/:seg2", setRule)
 
-	router.GET("delRule/:seg1/:seg2", delRule)
+	router.GET("/delRule/:seg1/:seg2", delRule)
 	fmt.Println(":" + *port)
 	router.Run(":" + *port)
 
