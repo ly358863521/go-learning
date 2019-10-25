@@ -27,6 +27,7 @@ func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	// step 2
+	fmt.Printf("send request %s %s %s\n", outReq.Method, outReq.Host, outReq.RemoteAddr)
 	res, err := transport.RoundTrip(outReq)
 	if err != nil {
 		rw.WriteHeader(http.StatusBadGateway)
