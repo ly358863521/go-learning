@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-var clients  = make(map[string]bool)
+var clients = make(map[string]bool)
 
-type Pxy struct {}
+type Pxy struct{}
 
 func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	fmt.Printf("Received request %s %s %s\n", req.Method, req.Host, req.RemoteAddr)
 
-	transport :=  http.DefaultTransport
+	transport := http.DefaultTransport
 
 	// step 1
 	outReq := new(http.Request)
@@ -30,9 +30,9 @@ func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		//X-Forwarded-For: client, proxy1, proxy2
 	}
 
-	
-	if _,ok := clients[clientIP];!ok{
-		outReq.Host = "127.0.0.1:12345"
+	if _, ok := clients[clientIP]; !ok {
+		outReq.Host = "myip.ipip.net"
+		outReq.URL.Host = "myip.ipip.net"
 		fmt.Println(outReq.Host)
 		res, err := transport.RoundTrip(outReq)
 		if err != nil {
@@ -47,7 +47,7 @@ func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(res.StatusCode)
 		io.Copy(rw, res.Body)
 		res.Body.Close()
-	}else{
+	} else {
 
 		fmt.Printf("send request %s %s %s\n", outReq.Method, outReq.Host, outReq.RemoteAddr)
 		res, err := transport.RoundTrip(outReq)
