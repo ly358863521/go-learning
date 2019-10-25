@@ -24,6 +24,7 @@ func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			clientIP = strings.Join(prior, ", ") + ", " + clientIP
 		}
 		outReq.Header.Set("X-Forwarded-For", clientIP)
+		//X-Forwarded-For: client, proxy1, proxy2
 	}
 
 	// step 2

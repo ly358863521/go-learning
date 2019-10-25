@@ -27,6 +27,5 @@ func TestCalc(t *testing.T) {
 	time.Sleep(time.Second * 2)
 	t.Log(ConvertToTitle(166))
 }
-//go test -v ./main_test.go ./main.go -bench=".*"        
-//只显示压力测试
+
 
