@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,10 +18,11 @@ type db struct {
 	db   map[string]string
 	path string
 }
+
 var (
-	trueIPmu sync.RWMutex
+	trueIPmu  sync.RWMutex
 	falseIPmu sync.RWMutex
-	rulemu sync.RWMutex
+	rulemu    sync.RWMutex
 )
 var (
 	trueIP  = db{db: make(map[string]string), path: "trueIP.json"}
@@ -140,6 +142,10 @@ func getTrueIP(c *gin.Context) {
 	defer trueIPmu.RUnlock()
 	seg1 := iptoseg(srcIP)
 	seg2 := iptoseg(dstIP)
+	if seg1 == seg2 {
+		c.String(http.StatusOK, trueIP.db[dst])
+		return
+	}
 	rule1 := seg1 + "@" + seg2
 	if _, ok := rule.db[rule1]; ok {
 		c.String(http.StatusOK, trueIP.db[dst])
