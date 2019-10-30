@@ -31,6 +31,7 @@ func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	if _, ok := clients[clientIP]; !ok {
+		fmt.Println(outReq.Host, outReq.URL.Host)
 		outReq.Host = "myip.ipip.net"
 		outReq.URL.Host = "myip.ipip.net"
 		fmt.Println(outReq.Host)
