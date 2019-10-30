@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -37,11 +36,11 @@ func main() {
 	}
 	fmt.Println("connected!")
 	defer conn.Close()
-	// bs := make([]byte, 10)
-	// binary.BigEndian.PutUint64(bs, 123)
-	// fmt.Println(bs)
-	bs := []byte(strconv.Itoa(123))
+	bs := make([]byte, 8)
+	binary.BigEndian.PutUint64(bs, 123)
 	fmt.Println(bs)
+	// bs := []byte(strconv.Itoa(123))
+	// fmt.Println(bs)
 	_, err = conn.Write(bs)
 	if err != nil {
 		fmt.Println("failed:", err)

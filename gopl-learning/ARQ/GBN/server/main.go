@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -42,15 +41,15 @@ func main() {
 
 func handleClient(conn *net.UDPConn) {
 	for {
-		data := make([]byte, 100)
+		data := make([]byte, 8)
 		n, remoteAddr, err := conn.ReadFromUDP(data)
 		if err != nil {
 			fmt.Println("failed to read UDP msg because of ", err.Error())
 			return
 		}
 		// fmt.Println(data)
-		// seq := binary.BigEndian.Uint64(data)
-		seq, err := strconv.Atoi(string(data[:n]))
+		seq := binary.BigEndian.Uint64(data)
+		// seq, err := strconv.Atoi(string(data[:n]))
 		fmt.Println(seq)
 		daytime := time.Now().Unix()
 		fmt.Println(n, remoteAddr)
