@@ -1,22 +1,23 @@
 package main
 
-import(
+import (
+	"bufio"
 	"fmt"
 	"math"
-	"bufio"
 	"os"
+
+	"eval"
 )
 
-import "eval"
-func main(){
-	
+func main() {
+
 	env := eval.Env{
-		"pi" :math.Pi,
+		"pi": math.Pi,
 	}
 
 	input := bufio.NewScanner(os.Stdin)
-	for input.Scan(){
-		expr,err:=eval.Parse(input.Text())
+	for input.Scan() {
+		expr, err := eval.Parse(input.Text())
 		if err != nil {
 			fmt.Println(err) // parse error
 			continue
