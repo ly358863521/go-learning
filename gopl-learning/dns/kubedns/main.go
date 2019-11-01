@@ -198,7 +198,7 @@ func main() {
 
 	router.GET("/addFalseIp/:name/:ip", addFalseIP)
 
-	router.GET("delFasleIp/:name", delFalseIP)
+	router.GET("/delFasleIp/:name", delFalseIP)
 
 	router.GET("/getTrueIp/:src/:dst", getTrueIP)
 
