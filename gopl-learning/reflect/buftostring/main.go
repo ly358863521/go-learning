@@ -12,6 +12,7 @@ func main() {
 	fmt.Println(&buf)
 	fmt.Println(unsafe.Pointer(&buf))
 	fmt.Println(unsafe.Pointer(&*(*string)(unsafe.Pointer(&buf))))
+	fmt.Println(*(*string)(unsafe.Pointer(&buf)))
 
 	fmt.Println(*(*string)(unsafe.Pointer(&buf2)))
 	fmt.Println(reflect.ValueOf(*(*string)(unsafe.Pointer(&buf2))).Kind())
