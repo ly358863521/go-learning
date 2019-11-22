@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { throwStatement } from '@babel/types';
 import { Table } from 'antd';
+import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 
 const columns = [
   { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -67,13 +68,14 @@ class Clock extends React.Component {
         <h1>Hello, world!</h1>
         <h2>It is clock.  {this.state.b}</h2>
       <p>{this.state.data}</p>
+      <Table
+      columns={columns}
+      expandedRowRender={record => <p style={{ margin: 0 }}>{record.description}</p>}
+      dataSource={data}
+    />
       </div>
       
-    //    <Table
-    //    columns={columns}
-    //    expandedRowRender={record => <p style={{ margin: 0 }}>{record.description}</p>}
-    //    dataSource={data}
-    //  />
+     
 
       
     );
