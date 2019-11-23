@@ -5,6 +5,9 @@ import { throwStatement } from '@babel/types';
 import { Table } from 'antd';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 import AddForm from "./addForm";
+import { Modal, Button } from 'antd';
+
+const { confirm } = Modal;
 
 
 
@@ -22,7 +25,7 @@ let data = [
 class Clock extends React.Component {
   
   state = {
-    b: 12,
+    b: 1,
     // data: ""
     data
     
@@ -36,13 +39,7 @@ class Clock extends React.Component {
       title: 'Action',
       dataIndex: '',
       key: 'x',
-      render: (_,r) => <a onClick={(e)=>{console.log(r.key);
-      const {data} = this.state;
-      this.setState({
-        data:data.filter((e)=>r.key!=e.key)
-      })
-      localStorage.setItem("data",JSON.stringify(this.state.data))
-      }}>Delete</a>,
+      render: (_,r) => <a onClick={this.showDeleteConfirm(r)}>Delete</a>,
     },
   ];
   flashMark = true
@@ -54,6 +51,7 @@ class Clock extends React.Component {
     //     data: evt.data
     //   })
     //  };
+    this.updateToLS()
     setInterval(()=>{
       this.setState({b:this.state.b+1})
     },1000)
@@ -76,7 +74,27 @@ class Clock extends React.Component {
       data: olddata,
     })
   }
-
+  showDeleteConfirm(r) {
+    confirm({
+      title: 'Are you sure delete this task?',
+      content: 'Some descriptions',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk:()=> {
+        console.log('OK');
+        // (e)=>{console.log(r.key);
+          const {data} = this.state;
+          this.setState({
+            data:data.filter((e)=>r.key!==e.key)
+          })
+          localStorage.setItem("data",JSON.stringify(this.state.data));
+          },
+      onCancel:()=> {
+        console.log('Cancel');
+      },
+    });
+  }
   render() {
     this.updateToLS()
     return (
