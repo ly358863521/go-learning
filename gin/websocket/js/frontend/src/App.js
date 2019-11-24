@@ -39,7 +39,9 @@ class Clock extends React.Component {
       title: 'Action',
       dataIndex: '',
       key: 'x',
-      render: (_,r) => <a onClick={this.showDeleteConfirm(r)}>Delete</a>,
+      render: (_,r) => <a onClick={()=>this.showDeleteConfirm(r)}>Delete</a>,
+    //       render: (_,r) => <a onClick={function(r){this.showDeleteConfirm(r)}}>Delete</a>,
+
     },
   ];
   flashMark = true
@@ -51,7 +53,7 @@ class Clock extends React.Component {
     //     data: evt.data
     //   })
     //  };
-    this.updateToLS()
+    // this.updateToLS()
     setInterval(()=>{
       this.setState({b:this.state.b+1})
     },1000)
@@ -69,10 +71,12 @@ class Clock extends React.Component {
   }
 
   readbackFromLS(){
-    let olddata = JSON.parse(localStorage.getItem("data"))
-    this.setState({
-      data: olddata,
-    })
+    if(localStorage.getItem("data")){
+      let olddata = JSON.parse(localStorage.getItem("data"))
+      this.setState({
+        data: olddata,
+      })
+    }
   }
   showDeleteConfirm(r) {
     confirm({
@@ -88,7 +92,7 @@ class Clock extends React.Component {
           this.setState({
             data:data.filter((e)=>r.key!==e.key)
           })
-          localStorage.setItem("data",JSON.stringify(this.state.data));
+          // localStorage.setItem("data",JSON.stringify(this.state.data));
           },
       onCancel:()=> {
         console.log('Cancel');
