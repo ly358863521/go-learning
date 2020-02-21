@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -18,7 +17,7 @@ type Lesson struct {
 
 func main() {
 	jsonStr := `{"Age": 18,"name": "Jim" ,"s": "男",
-	"lessons":["English","History"],"Room":201,"n":null,"b":false}`
+	"lessons":["English","History","computer"],"Room":201,"n":null,"b":false}`
 	var hu Human
 	if err := json.Unmarshal([]byte(jsonStr), &hu); err == nil {
 		fmt.Println(hu)
@@ -39,14 +38,18 @@ func main() {
 		}
 	}
 	strR := strings.NewReader(jsonStr)
+	var builder strings.Builder
+	builder.Write([]byte(jsonStr))
 	fmt.Println(strR)
-	h := &Human{}
-	if err := json.NewDecoder(strR).Decode(h); err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(h)
-	f, _ := os.Create("./t.json")
-	json.NewEncoder(f).Encode(h)
+	fmt.Println(builder.String())
+	// h := &Human{}
+	// if err := json.NewDecoder(strR).Decode(h); err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(h)
+	// f, _ := os.Create("./t.json")
+	// json.NewEncoder(f).Encode(h)
+	// f.Close()
 
 }
 
